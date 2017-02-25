@@ -8,22 +8,31 @@ class AppController extends Component {
     state = {}
 
     onLoad = () => {
-        this.setState({ loading: true });
+        this.startLoad();
 
         request.get(repoUrl("mozilla", "gecko-dev"))
-            .then(res => {
-                this.setState({
-                    loading: false,
-                    commits: res.body
-                });
-            })
-            .catch(err => {
-                this.setState({
-                    loading: false,
-                    error: err.message,
-                    commits: null,
-                });
-            });
+            .then(res => this.commitsLoaded(res.body))
+            .catch(error => this.loadError(error));
+    }
+
+    startLoad() {
+        this.setState({ loading: true });
+    }
+
+    commitsLoaded(commits) {
+        this.setState({
+            loading: false,
+            error: false,
+            commits
+        });
+    }
+
+    loadError(error) {
+        this.setState({
+            loading: false,
+            error: error.message,
+            commits: null,
+        });
     }
 
     render() {
@@ -40,31 +49,12 @@ class AppController extends Component {
     }
 }
 
-const AppComponent = ({ loading, error, commits, onLoad }) => (
-    <div className="App">
-        <button onClick={onLoad} disabled={loading}>Load</button>
-        <ErrorMessage error={error} />
-        <LoadingIndicator loading={loading} />
-        { commits && <CommitList commits={commits} /> }
-    </div>
-);
-
 const ErrorMessage = ({ error }) => (
     error ? <div className="alert">{ error }</div> : null
 );
 
 const LoadingIndicator = ({ loading }) => (
     loading ? <div className="loading">loading...</div> : null
-);
-
-const CommitList = ({ commits }) => (
-    <div>
-    {
-        commits.map(commit => (
-            <Commit key={commit.sha} commit={commit} />
-        ))
-    }
-    </div>
 );
 
 const Commit = ({ commit }) => (
@@ -74,5 +64,25 @@ const Commit = ({ commit }) => (
         <div>Author: {commit.commit.author.name }</div>
     </div>
 );
+
+const CommitList = ({ commits }) => (
+    <div>
+        {
+            commits.map(commit => (
+                <Commit key={commit.sha} commit={commit} />
+            ))
+        }
+    </div>
+);
+
+const AppComponent = ({ loading, error, commits, onLoad }) => (
+    <div className="App">
+        <button onClick={onLoad} disabled={loading}>Load</button>
+        <ErrorMessage error={error} />
+        <LoadingIndicator loading={loading} />
+        { commits && <CommitList commits={commits} /> }
+    </div>
+);
+
 
 export default AppController;

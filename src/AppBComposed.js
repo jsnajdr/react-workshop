@@ -14,6 +14,7 @@ class AppController extends Component {
             .then(res => {
                 this.setState({
                     loading: false,
+                    error: false,
                     commits: res.body
                 });
             })

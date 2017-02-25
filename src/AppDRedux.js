@@ -79,6 +79,14 @@ const LoadingIndicator = ({ loading }) => (
     loading ? <div className="loading">loading...</div> : null
 );
 
+const Commit = ({ commit }) => (
+    <div className="commit">
+        <div>SHA: { commit.sha }</div>
+        <div>Message: { commit.commit.message }</div>
+        <div>Author: {commit.commit.author.name }</div>
+    </div>
+);
+
 const CommitList = ({ commits }) => (
     <div>
     {
@@ -86,14 +94,6 @@ const CommitList = ({ commits }) => (
             <Commit key={commit.sha} commit={commit} />
         ))
     }
-    </div>
-);
-
-const Commit = ({ commit }) => (
-    <div className="commit">
-        <div>SHA: { commit.sha }</div>
-        <div>Message: { commit.commit.message }</div>
-        <div>Author: {commit.commit.author.name }</div>
     </div>
 );
 
